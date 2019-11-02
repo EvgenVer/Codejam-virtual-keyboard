@@ -54,3 +54,6 @@ div.digit {
     padding-top: 0.5em;
 }
 
+div.press {
+    background-color: yellow;
+}

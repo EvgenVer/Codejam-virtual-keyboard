@@ -363,9 +363,9 @@ const keys = [
     className: 'func ctrl',
   },
   {
-    Key: 'Menu',
-    eventCode: 'ContextMenu',
-    className: 'func context',
+    Key: 'Win',
+    eventCode: 'MetaLeft',
+    className: 'func win',
   },
   {
     Key: 'Alt',
@@ -421,16 +421,37 @@ for (const i of keys) {
   const key = document.createElement('div');
   if (i.className === 'ru_letter') {
     key.className = i.className;
+    key.classList.add(i.eventCode);
     key.innerHTML = `<span>${i.ruKey}</span>`;
   } else if (i.className === 'digit') {
     key.className = i.className;
+    key.classList.add(i.eventCode);
     key.innerHTML = `<span>${i.ruSymbolKey}<br>${i.ruKey}</span>`;
   } else if (i.className === 'letter') {
     key.className = i.className;
+    key.classList.add(i.eventCode);
     key.innerHTML = `<span>${i.ruKey}</span>`;
   } else {
     key.className = i.className;
+    key.classList.add(i.eventCode);
     key.innerHTML = `<span>${i.Key}</span>`;
   }
   keyboard.append(key);
 }
+
+document.addEventListener('keydown', (event) => {
+  for (let i of keys) {
+    if (i.eventCode === event.code) {
+      let selector = '.' + event.code;
+      document.querySelector(selector).classList.add('press');
+    }
+  }
+});
+document.addEventListener('keyup', (event) => {
+  for (let i of keys) {
+    if (i.eventCode === event.code) {
+      let selector = '.' + event.code;
+      document.querySelector(selector).classList.remove('press');
+    }
+  }
+})
