@@ -50,10 +50,9 @@ textarea {
     border-radius: 10px;
 }
 
-div.digit {
-    padding-top: 0.5em;
-}
-
 div.press {
+    background-color: yellow;
+}
+div.press_caps {
     background-color: yellow;
 }
