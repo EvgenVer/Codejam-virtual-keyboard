@@ -47,16 +47,23 @@ textarea {
     background: grey;
     border: 1px solid grey;
     border-radius: 10px;
+    outline: none;
 }
 button:hover {
     background-color: rgb(68, 67, 67);
 }
 button:active {
     background-color: yellow;
+    border-radius: 30px;
+    transition: border-radius 10s ease-in 0;
 }
 button.press {
     background-color: yellow;
+    border-radius: 30px;
+    transition: border-radius 10s ease-in 0;
 }
 button.press_caps {
     background-color: yellow;
+    border-radius: 30px;
+    transition: border-radius 10s ease-in 0;
 }
