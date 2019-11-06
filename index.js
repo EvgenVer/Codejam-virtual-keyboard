@@ -422,7 +422,7 @@ document.body.append(keyboard);
 
 for (let i = 0; i < keys.length; i += 1) {
   const item = keys[i];
-  const key = document.createElement('div');
+  const key = document.createElement('button');
   key.setAttribute('id', item.eventCode);
   if (item.className === 'ru_letter') {
     key.className = item.className;
@@ -523,14 +523,32 @@ function Shift() {
 }
 
 function handlerClickDown(event) {
-  input.focus();
-  const elem = event.target;
-  console.log(elem);
-  if (elem.classList.contains('ru_letter') || 
-      elem.classList.contains('letter') || 
-      elem.classList.contains('digit')) {
-        const text = event.target.textContent;
-        document.querySelector('textarea').value += text;
+  const elem = event.target.tagName === 'SPAN' ? event.target.parentElement : event.target;
+  if (elem.classList.contains('ru_letter')
+      || elem.classList.contains('letter')
+      || elem.classList.contains('digit')) {
+    const text = event.target.textContent;
+    document.querySelector('textarea').value += text;
+  } else if (elem.id === 'Tab') {
+    document.querySelector('textarea').value += '\t';
+  } else if (elem.id === 'CapsLock') {
+    CapsLock();
+  } else if (elem.classList.contains('shift')) {
+    Shift();
+  } else if (elem.id === 'Space') {
+    document.querySelector('textarea').value += ' ';
+  } else if (elem.id === 'Enter') {
+    document.querySelector('textarea').value += '\n';
+  } else if (elem.id === 'Backspace') {
+    const str = document.querySelector('textarea').value;
+    document.querySelector('textarea').value = str.slice(0, str.length - 1);
+  }
+}
+
+function handlerClickUp(event) {
+  const elem = event.target.tagName === 'SPAN' ? event.target.parentElement : event.target;
+  if (elem.classList.contains('shift')) {
+    Shift();
   }
 }
 
@@ -559,3 +577,4 @@ document.addEventListener('keydown', (event) => {
   }
 });
 document.querySelector('div.keyboard').addEventListener('mousedown', handlerClickDown);
+document.querySelector('div.keyboard').addEventListener('mouseup', handlerClickUp);
