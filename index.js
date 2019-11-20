@@ -1,4 +1,3 @@
-/* eslint-env browser */
 const keys = [
   {
     ruKey: 'Ё',
@@ -409,82 +408,92 @@ const keys = [
   },
 ];
 
-let lang = window.localStorage.lang ? window.localStorage.lang : 'RU';
-let register = 'lower';
+const lang = window.localStorage.lang
+  ? { value: window.localStorage.lang } : { value: 'RU' };
+const register = { value: 'lower' };
+
+const main = document.createElement('main');
 
 const input = document.createElement('textarea');
 input.setAttribute('autofocus', '');
-document.body.append(input);
+main.append(input);
 
 const keyboard = document.createElement('div');
 keyboard.classList.add('keyboard');
-document.body.append(keyboard);
+main.append(keyboard);
+
+const langRU = () => {
+  if (lang.value === 'RU') {
+    return true;
+  }
+  return false;
+};
 
 for (let i = 0; i < keys.length; i += 1) {
   const item = keys[i];
   const key = document.createElement('button');
   key.setAttribute('id', item.eventCode);
-  if (item.className === 'ru_letter') {
-    key.className = item.className;
-    key.innerHTML = lang === 'RU' ? `<span>${item.ruKey.toLowerCase()}</span>` : `<span>${item.enKey}</span>`;
-  } else if (item.className === 'digit') {
-    key.className = item.className;
-    key.innerHTML = lang === 'RU' ? `<span>${item.ruKey}</span>` : `<span>${item.enKey}</span>`;
-  } else if (item.className === 'letter') {
-    key.className = item.className;
-    key.innerHTML = lang === 'RU' ? `<span>${item.ruKey.toLowerCase()}</span>` : `<span>${item.enKey.toLowerCase()}</span>`;
-  } else {
-    key.className = item.className;
-    key.innerHTML = `<span>${item.Key}</span>`;
+  key.className = item.className;
+  switch (item.className) {
+    case 'ru_letter':
+      key.innerHTML = langRU() ? `<span>${item.ruKey.toLowerCase()}</span>` : `<span>${item.enKey}</span>`;
+      break;
+    case 'digit':
+      key.innerHTML = langRU() ? `<span>${item.ruKey}</span>` : `<span>${item.enKey}</span>`;
+      break;
+    case 'letter':
+      key.innerHTML = langRU() ? `<span>${item.ruKey.toLowerCase()}</span>` : `<span>${item.enKey.toLowerCase()}</span>`;
+      break;
+    default:
+      key.innerHTML = `<span>${item.Key}</span>`;
   }
   keyboard.append(key);
 }
 
+document.body.append(main);
+
+const textarea = document.querySelector('textarea');
+
 function handlerDown(event) {
   input.focus();
-  for (let i = 0; i < keys.length; i += 1) {
-    const item = keys[i];
-    if (item.eventCode === event.code) {
-      const elem = document.querySelector(`#${event.code}`);
-      if (elem.className === 'letter' || elem.className === 'ru_letter' || elem.className === 'digit') {
-        event.preventDefault();
-        document.querySelector('textarea').value += elem.textContent;
-      }
-      elem.classList.add('press');
+  if (keys.find((item) => item.eventCode === event.code)) {
+    const elem = document.querySelector(`#${event.code}`);
+    if (elem.className === 'letter' || elem.className === 'ru_letter' || elem.className === 'digit') {
+      event.preventDefault();
+      textarea.value += elem.textContent;
     }
+    elem.classList.add('press');
   }
 }
 
 function handlerUp(event) {
-  for (let i = 0; i < keys.length; i += 1) {
-    const item = keys[i];
-    if (item.eventCode === event.code) {
-      document.querySelector(`#${event.code}`).classList.remove('press');
-    }
+  if (keys.find((item) => item.eventCode === event.code)) {
+    document.querySelector(`#${event.code}`).classList.remove('press');
   }
 }
+
 
 function changeRegister() {
   for (let i = 0; i < keys.length; i += 1) {
     const item = keys[i];
     const elem = document.querySelector(`#${item.eventCode}>span`);
     if (item.className === 'ru_letter') {
-      if (register === 'lower') {
-        elem.innerHTML = lang === 'RU' ? `${item.ruKey.toLowerCase()}` : `${item.enKey}`;
+      if (register.value === 'lower') {
+        elem.innerHTML = langRU() ? `${item.ruKey.toLowerCase()}` : `${item.enKey}`;
       } else {
-        elem.innerHTML = lang === 'RU' ? `${item.ruKey}` : `${item.enSymbolKey}`;
+        elem.innerHTML = langRU() ? `${item.ruKey}` : `${item.enSymbolKey}`;
       }
     } else if (item.className === 'digit') {
-      if (register === 'lower') {
-        elem.innerHTML = lang === 'RU' ? `${item.ruKey}` : `${item.enKey}`;
+      if (register.value === 'lower') {
+        elem.innerHTML = langRU() ? `${item.ruKey}` : `${item.enKey}`;
       } else {
-        elem.innerHTML = lang === 'RU' ? `${item.ruSymbolKey}` : `${item.enSymbolKey}`;
+        elem.innerHTML = langRU() ? `${item.ruSymbolKey}` : `${item.enSymbolKey}`;
       }
     } else if (item.className === 'letter') {
-      if (register === 'lower') {
-        elem.innerHTML = lang === 'RU' ? `${item.ruKey.toLowerCase()}` : `${item.enKey.toLowerCase()}`;
+      if (register.value === 'lower') {
+        elem.innerHTML = langRU() ? `${item.ruKey.toLowerCase()}` : `${item.enKey.toLowerCase()}`;
       } else {
-        elem.innerHTML = lang === 'RU' ? `${item.ruKey}` : `${item.enKey}`;
+        elem.innerHTML = langRU() ? `${item.ruKey}` : `${item.enKey}`;
       }
     }
   }
@@ -492,32 +501,31 @@ function changeRegister() {
 
 function changeLang(event) {
   if (event.altKey && event.ctrlKey) {
-    if (lang === 'RU') {
-      lang = 'EN';
-      window.localStorage.setItem('lang', lang);
+    if (langRU()) {
+      lang.value = 'EN';
     } else {
-      lang = 'RU';
-      window.localStorage.setItem('lang', lang);
+      lang.value = 'RU';
     }
+    window.localStorage.setItem('lang', lang.value);
     changeRegister();
   }
 }
 
 function CapsLock() {
-  if (register === 'lower') {
-    register = 'upper';
+  if (register.value === 'lower') {
+    register.value = 'upper';
   } else {
-    register = 'lower';
+    register.value = 'lower';
   }
   changeRegister();
   document.querySelector('#CapsLock').classList.toggle('press_caps');
 }
 
 function Shift() {
-  if (register === 'lower') {
-    register = 'upper';
+  if (register.value === 'lower') {
+    register.value = 'upper';
   } else {
-    register = 'lower';
+    register.value = 'lower';
   }
   changeRegister();
 }
@@ -528,20 +536,20 @@ function handlerClickDown(event) {
       || elem.classList.contains('letter')
       || elem.classList.contains('digit')) {
     const text = event.target.textContent;
-    document.querySelector('textarea').value += text;
+    textarea.value += text;
   } else if (elem.id === 'Tab') {
-    document.querySelector('textarea').value += '\t';
+    textarea.value += '\t';
   } else if (elem.id === 'CapsLock') {
     CapsLock();
   } else if (elem.classList.contains('shift')) {
     Shift();
   } else if (elem.id === 'Space') {
-    document.querySelector('textarea').value += ' ';
+    textarea.value += ' ';
   } else if (elem.id === 'Enter') {
-    document.querySelector('textarea').value += '\n';
+    textarea.value += '\n';
   } else if (elem.id === 'Backspace') {
-    const str = document.querySelector('textarea').value;
-    document.querySelector('textarea').value = str.slice(0, str.length - 1);
+    const str = textarea.value;
+    textarea.value = str.slice(0, str.length - 1);
   }
 }
 
@@ -561,6 +569,7 @@ document.addEventListener('keydown', (event) => {
 });
 document.addEventListener('keydown', (event) => {
   if (event.code === 'ShiftRight' || event.code === 'ShiftLeft') {
+    if (event.repeat) return;
     Shift();
   }
 });
